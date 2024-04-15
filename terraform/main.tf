@@ -6,7 +6,7 @@ terraform {
   }
   required_version = ">= 0.13"
 }
-#sdfsd
+
 locals {
   folder_id = "b1gfcg9sv09pksgqrav5"
   cloud_id = "b1g22bfvv8svr6ve4095"
@@ -27,12 +27,14 @@ resource "yandex_compute_instance" "vm_in_existing_subnet" {
     cores = 2
     memory = 1
     core_fraction = 20
+   
 
     
   }
   boot_disk {
     initialize_params {
       image_id = "fd8l45jhe4nvt0ih7h2e"
+      size = 10
     }
   }
   network_interface {
