@@ -6,7 +6,7 @@ terraform {
   }
   required_version = ">= 0.13"
 }
-
+#sdfsd
 locals {
   folder_id = "b1gfcg9sv09pksgqrav5"
   cloud_id = "b1g22bfvv8svr6ve4095"
