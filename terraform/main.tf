@@ -20,3 +20,5 @@ provider "yandex" {
     service_account_key_file = "/home/ermac/Desktop/Diplom/authorized_key.json"
   zone = "ru-central1-a"
 }
+
+
