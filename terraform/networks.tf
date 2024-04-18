@@ -13,11 +13,11 @@ resource "yandex_vpc_subnet" "private-subnet" { #частная сеть
 resource "yandex_vpc_subnet" "public-subnet" { #публичная сеть
   name = "public-subnet"
   network_id = yandex_vpc_network.vpc.id
-  zone = "ru-central1-a" # Укажите нужную зону
+  zone = "ru-central1-a" # Укажите нужную 
   v4_cidr_blocks = ["10.10.20.0/24"]
   }
 
-resource yandex_vpc_security_group vm_group_sg { #firewall
+resource yandex_vpc_security_group "vm_group_service" { #firewall
   network_id = yandex_vpc_network.vpc.id
   ingress {
     description    = "Allow HTTP protocol from local subnets"
@@ -46,17 +46,34 @@ resource yandex_vpc_security_group vm_group_sg { #firewall
   }
 }
 
-resource "yandex_alb_target_group" "TG" {
-  name = "TG"
+resource yandex_vpc_security_group "vm_group_bastion" { #firewall for bastion
+  network_id = yandex_vpc_network.vpc.id
+  ingress {
+    description    = "Allow HTTP protocol from local subnets"
+    protocol       = "TCP"
+    port           = "22"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  egress {
+    description    = "Permit ANY"
+    protocol       = "ANY"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+
+resource "yandex_alb_target_group" "tgs" {
+  name = "tgs"
 
   target {
-    subnet_id = yandex_compute_instance.WEB-1.network_interface.0.subnet_id
-    ip_address = yandex_compute_instance.WEB-1.network_interface.0.ip_address
+    subnet_id = yandex_compute_instance.vm-w2.network_interface.0.subnet_id
+    ip_address = yandex_compute_instance.vm-w2.network_interface.0.ip_address
   }
 
- # target {
-   # subnet_id = yandex_compute_instance.vm.network_interface.0.subnet_id
-   # ip_address = yandex_compute_instance.vm.network_interface.0.ip_address
- # }
+  target {
+    subnet_id = yandex_compute_instance.vm-web1.network_interface.0.subnet_id
+    ip_address = yandex_compute_instance.vm-web1.network_interface.0.ip_address
+  }
   
 }

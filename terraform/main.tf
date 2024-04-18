@@ -17,7 +17,7 @@ locals {
 provider "yandex" {
     cloud_id = local.cloud_id
     folder_id = local.folder_id
-    service_account_key_file = "/home/ermac/Desktop/Diplom/authorized_key.json"
+    service_account_key_file = "/home/ermac/Diplom/Diplom/terraform/authorized_key.json"
   zone = "ru-central1-a"
 }
 
