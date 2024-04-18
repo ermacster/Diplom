@@ -28,7 +28,7 @@ resource "yandex_compute_instance" "vm-web1" {
 }
 
 #веб 2
-resource "yandex_compute_instance" "vm-w2" {
+resource "yandex_compute_instance" "vm-web2" {
   name        = "vm-w2"
   zone        = "ru-central1-a"
   platform_id = "standard-v2"
