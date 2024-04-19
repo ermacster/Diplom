@@ -20,5 +20,3 @@ provider "yandex" {
     service_account_key_file = "/home/ermac/Diplom/Diplom/terraform/authorized_key.json"
   zone = "ru-central1-a"
 }
-
-

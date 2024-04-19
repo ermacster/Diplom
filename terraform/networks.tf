@@ -160,4 +160,3 @@ resource "yandex_alb_load_balancer" "test-balancer" {
     }
   }
 }
- 

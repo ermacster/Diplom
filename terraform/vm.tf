@@ -1,3 +1,4 @@
+
 #веб 1
 resource "yandex_compute_instance" "vm-web1" {
   name        = "vm-in-public-network"
