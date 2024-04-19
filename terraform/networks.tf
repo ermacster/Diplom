@@ -3,12 +3,20 @@ resource "yandex_vpc_network" "vpc" {
   name = "my-vpc"
 }
 
-#частная сеть
-resource "yandex_vpc_subnet" "private-subnet" { 
-  name = "private-subnet"
+#частная сеть a
+resource "yandex_vpc_subnet" "private-subnet-a" { 
+  name = "private-subnet-a"
   network_id = yandex_vpc_network.vpc.id
   zone = "ru-central1-a" # Укажите нужную зону
   v4_cidr_blocks = ["10.10.10.0/24"]
+  
+}
+#частная сеть b
+resource "yandex_vpc_subnet" "private-subnet-b" { 
+  name = "private-subnet-b"
+  network_id = yandex_vpc_network.vpc.id
+  zone = "ru-central1-b" # Укажите нужную зону
+  v4_cidr_blocks = ["10.10.20.0/24"]
   
 }
 
@@ -17,7 +25,7 @@ resource "yandex_vpc_subnet" "public-subnet" {
   name = "public-subnet"
   network_id = yandex_vpc_network.vpc.id
   zone = "ru-central1-a" # Укажите нужную 
-  v4_cidr_blocks = ["10.10.20.0/24"]
+  v4_cidr_blocks = ["10.10.30.0/24"]
   }
 
 #firewall
@@ -27,14 +35,14 @@ resource yandex_vpc_security_group "vm_group_service" {
     description    = "Allow HTTP protocol from local subnets"
     protocol       = "TCP"
     port           = "80"
-    v4_cidr_blocks = ["10.10.10.0/24", "10.10.20.0/24"]
+    v4_cidr_blocks = ["10.10.10.0/24", "10.10.20.0/24", "10.10.30.0/24"]
   }
 
   ingress {
     description    = "Allow HTTPS protocol from local subnets"
     protocol       = "TCP"
     port           = "443"
-    v4_cidr_blocks = ["10.10.10.0/24", "10.10.20.0/24"]
+    v4_cidr_blocks = ["10.10.10.0/24", "10.10.20.0/24", "10.10.30.0/24"]
   }
 
   ingress {
@@ -86,18 +94,18 @@ resource "yandex_alb_target_group" "tgs" {
 #Бекенд
 resource "yandex_alb_backend_group" "backend_group" {
  http_backend {
-    name                   = "<backend test>"
-    weight                 = 1
-    port                   = 80
-    target_group_ids       = ["yandex_alb_target_group.tgs.id"]
+    name = "bkg-test"
+    weight = 1
+    port = 80
+    target_group_ids = [yandex_alb_target_group.tgs.id]
     load_balancing_config {
       panic_threshold      = 90
     }    
     healthcheck {
-      timeout              = "10s"
-      interval             = "2s"
-      healthy_threshold    = 10
-      unhealthy_threshold  = 15
+      timeout = "10s"
+      interval = "2s"
+      healthy_threshold = 10
+      unhealthy_threshold = 15
       http_healthcheck {
         path               = "/"
       }
@@ -106,46 +114,46 @@ resource "yandex_alb_backend_group" "backend_group" {
 }
 
 #httprouter
-resource "yandex_alb_http_router" "tf-router" {
-  name          = "<HTTP_router_name>"
-  labels        = {
-    tf-label    = "tf-label-value"
+resource "yandex_alb_http_router" "htr" {
+  name = "htr"
+  labels = {
+    tf-label = "tf-label-value"
     empty-label = ""
   }
 }
 
-resource "yandex_alb_virtual_host" "my-virtual-host" {
-  name                    = "<virtual_host1>"
-  http_router_id          = yandex_alb_http_router.tf-router.id
+resource "yandex_alb_virtual_host" "my-vh" {
+  name = "my-vh"
+  http_router_id = yandex_alb_http_router.htr.id
   route {
-    name                  = "route_to_hell"
+    name = "route-to-hell"
     http_route {
       http_route_action {
-        backend_group_id  = yandex_alb_backend_group.backend_group.id
-        timeout           = "60s"
+        backend_group_id = yandex_alb_backend_group.backend_group.id
+        timeout = "60s"
       }
     }
   }
   route_options {
-    security_profile_id   = "fevcrrg5fci3bf6n6460"
+    security_profile_id = "fevcrrg5fci3bf6n6460"
   }
 }
 
 #Балансер
 resource "yandex_alb_load_balancer" "test-balancer" {
-  name        = "<name_of_L7_load_balancer>"
-  network_id  = "<network_ID>"
-  security_group_ids = ["<list_of_security_group_IDs>"]
+  name = "test-balancer"
+  network_id = yandex_vpc_network.vpc.id
+  security_group_ids = [yandex_vpc_security_group.vm_group_service.id]
 
   allocation_policy {
     location {
-      zone_id   = "<availability_zone>"
-      subnet_id = "<subnet_ID>"
+      zone_id = "ru-central1-a"
+      subnet_id = yandex_vpc_subnet.public-subnet.id
     }
   }
 
   listener {
-    name = "<listener_name>"
+    name = "listener-test"
     endpoint {
       address {
         external_ipv4_address {
@@ -155,7 +163,7 @@ resource "yandex_alb_load_balancer" "test-balancer" {
     }
     http {
       handler {
-        http_router_id = "<HTTP_router_ID>"
+        http_router_id = yandex_alb_http_router.htr.id
       }
     }
   }
