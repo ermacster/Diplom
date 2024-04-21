@@ -20,7 +20,8 @@ resource "yandex_compute_instance" "vm-web1" {
 
   network_interface {
     subnet_id          = yandex_vpc_subnet.private-subnet-a.id
-    security_group_ids = [yandex_vpc_security_group.vm_group_service.id]    
+    security_group_ids = [yandex_vpc_security_group.vm_group_service.id]
+    nat                = false
   }
 
   scheduling_policy {
@@ -49,7 +50,7 @@ resource "yandex_compute_instance" "vm-web2" {
   network_interface {
     subnet_id          = yandex_vpc_subnet.private-subnet-b.id
     security_group_ids = [yandex_vpc_security_group.vm_group_service.id]
-
+    nat                = false
   }
 
   scheduling_policy {
@@ -77,7 +78,7 @@ resource "yandex_compute_instance" "vm-elastics" {
   network_interface {
     subnet_id          = yandex_vpc_subnet.private-subnet-b.id
     security_group_ids = [yandex_vpc_security_group.vm_group_service.id]
-
+    nat                = false
   }
 
   scheduling_policy {
@@ -168,7 +169,7 @@ resource "yandex_compute_instance" "vm-base" {
 
   network_interface {
     subnet_id          = yandex_vpc_subnet.public-subnet.id
-    #security_group_ids = ["yandex_vpc_security_group.vm_group_service.id"]
+    security_group_ids = ["yandex_vpc_security_group.vm_group_bastion.id"]
     nat                = true # The subnet ID of the existing subnet
   }
 

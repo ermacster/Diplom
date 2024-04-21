@@ -9,7 +9,7 @@ resource "yandex_vpc_subnet" "private-subnet-a" {
   network_id = yandex_vpc_network.vpc.id
   zone = "ru-central1-a" # Укажите нужную зону
   v4_cidr_blocks = ["10.10.10.0/24"]
-  
+  route_table_id = yandex_vpc_route_table.rt.id
 }
 #частная сеть b
 resource "yandex_vpc_subnet" "private-subnet-b" { 
@@ -17,7 +17,7 @@ resource "yandex_vpc_subnet" "private-subnet-b" {
   network_id = yandex_vpc_network.vpc.id
   zone = "ru-central1-b" # Укажите нужную зону
   v4_cidr_blocks = ["10.10.20.0/24"]
-  
+  route_table_id = yandex_vpc_route_table.rt.id
 }
 
 #публичная сеть
@@ -26,7 +26,24 @@ resource "yandex_vpc_subnet" "public-subnet" {
   network_id = yandex_vpc_network.vpc.id
   zone = "ru-central1-a" # Укажите нужную 
   v4_cidr_blocks = ["10.10.30.0/24"]
+  
+}
+#NAT for privat
+resource "yandex_vpc_gateway" "nat_gateway" {
+  name = "test-gateway"
+  shared_egress_gateway {}
+}
+
+resource "yandex_vpc_route_table" "rt" {
+  name       = "test-route-table"
+  network_id = yandex_vpc_network.vpc.id
+
+ static_route {
+    destination_prefix = "0.0.0.0/0"
+    gateway_id = yandex_vpc_gateway.nat_gateway.id
   }
+}
+
 
 #firewall
 resource yandex_vpc_security_group "vm_group_service" { 
@@ -62,7 +79,7 @@ resource yandex_vpc_security_group "vm_group_service" {
 resource yandex_vpc_security_group "vm_group_bastion" { 
   network_id = yandex_vpc_network.vpc.id
   ingress {
-    description    = "Allow HTTP protocol from local subnets"
+    description    = "Allow ssh protocol from local subnets"
     protocol       = "TCP"
     port           = "22"
     v4_cidr_blocks = ["0.0.0.0/0"]
@@ -134,9 +151,9 @@ resource "yandex_alb_virtual_host" "my-vh" {
       }
     }
   }
-  route_options {
-    security_profile_id = "fevcrrg5fci3bf6n6460"
-  }
+  #route_options {
+   # security_profile_id = "fevcrrg5fci3bf6n6460"
+ # }
 }
 
 #Балансер
