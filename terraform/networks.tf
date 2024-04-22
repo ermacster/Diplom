@@ -1,33 +1,47 @@
 #виртуальная сеть
-resource "yandex_vpc_network" "vpc" { 
-  name = "my-vpc"
+resource "yandex_vpc_network" "external-bastion-network" { 
+  name = "external-bastion-network"
 }
 
-#частная сеть a
-resource "yandex_vpc_subnet" "private-subnet-a" { 
-  name = "private-subnet-a"
-  network_id = yandex_vpc_network.vpc.id
+#наружная сеть
+resource "yandex_vpc_subnet" "bastion-external-segment" { 
+  name = "bastion-external-segment"
+  network_id = yandex_vpc_network.external-bastion-network.id
   zone = "ru-central1-a" # Укажите нужную зону
-  v4_cidr_blocks = ["10.10.10.0/24"]
-  route_table_id = yandex_vpc_route_table.rt.id
+  v4_cidr_blocks = ["172.16.18.0/28"]
 }
-#частная сеть b
-resource "yandex_vpc_subnet" "private-subnet-b" { 
-  name = "private-subnet-b"
-  network_id = yandex_vpc_network.vpc.id
-  zone = "ru-central1-b" # Укажите нужную зону
-  v4_cidr_blocks = ["10.10.20.0/24"]
+
+
+resource "yandex_vpc_network" "internal-bastion-network" { 
+  name = "internal-bastion-network"
+}
+
+#внутренняя частная a
+resource "yandex_vpc_subnet" "bastion-internal-segment-a" { 
+  name = "bastion-internal-segment-a"
+  network_id = yandex_vpc_network.internal-bastion-network.id
+  zone = "ru-central1-a" # Укажите нужную зону
+  v4_cidr_blocks = ["172.16.15.0/24"]
   route_table_id = yandex_vpc_route_table.rt.id
 }
 
-#публичная сеть
-resource "yandex_vpc_subnet" "public-subnet" { 
-  name = "public-subnet"
-  network_id = yandex_vpc_network.vpc.id
-  zone = "ru-central1-a" # Укажите нужную 
-  v4_cidr_blocks = ["10.10.30.0/24"]
-  
+#внутренняя частная b
+resource "yandex_vpc_subnet" "bastion-internal-segment-b" { 
+  name = "bastion-internal-segment-b"
+  network_id = yandex_vpc_network.internal-bastion-network.id
+  zone = "ru-central1-b" # Укажите нужную зону
+  v4_cidr_blocks = ["172.16.16.0/24"]
+  route_table_id = yandex_vpc_route_table.rt.id
 }
+
+#внутренняя публичная с
+resource "yandex_vpc_subnet" "bastion-internal-segment-c" { 
+  name = "bastion-internal-segment-c"
+  network_id = yandex_vpc_network.internal-bastion-network.id
+  zone = "ru-central1-b" # Укажите нужную зону
+  v4_cidr_blocks = ["172.16.17.0/24"]
+}
+
 #NAT for privat
 resource "yandex_vpc_gateway" "nat_gateway" {
   name = "test-gateway"
@@ -36,7 +50,7 @@ resource "yandex_vpc_gateway" "nat_gateway" {
 
 resource "yandex_vpc_route_table" "rt" {
   name       = "test-route-table"
-  network_id = yandex_vpc_network.vpc.id
+  network_id = yandex_vpc_network.internal-bastion-network.id
 
  static_route {
     destination_prefix = "0.0.0.0/0"
@@ -44,24 +58,27 @@ resource "yandex_vpc_route_table" "rt" {
   }
 }
 
-
-#firewall
-resource yandex_vpc_security_group "vm_group_service" { 
-  network_id = yandex_vpc_network.vpc.id
+#firewall for bastion
+resource yandex_vpc_security_group "secure-bastion-sg" { 
+  network_id = yandex_vpc_network.external-bastion-network.id
   ingress {
-    description    = "Allow HTTP protocol from local subnets"
+    description    = "Allow ssh protocol from internet"
     protocol       = "TCP"
-    port           = "80"
-    v4_cidr_blocks = ["10.10.10.0/24", "10.10.20.0/24", "10.10.30.0/24"]
-  }
+    port           = "22"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  } 
+}
 
+#firewall for bastion internal
+resource yandex_vpc_security_group "internal-bastion-sg" { 
+  network_id = yandex_vpc_network.internal-bastion-network.id
   ingress {
-    description    = "Allow HTTPS protocol from local subnets"
+    description    = "Allow ssh protocol from internet"
     protocol       = "TCP"
-    port           = "443"
-    v4_cidr_blocks = ["10.10.10.0/24", "10.10.20.0/24", "10.10.30.0/24"]
+    port           = "22"
+    v4_cidr_blocks = ["172.16.15.254/32"]
   }
-
+  
   ingress {
     description = "Health checks from NLB"
     protocol = "TCP"
@@ -69,28 +86,15 @@ resource yandex_vpc_security_group "vm_group_service" {
   }
 
   egress {
-    description    = "Permit ANY"
-    protocol       = "ANY"
-    v4_cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-#firewall for bastion
-resource yandex_vpc_security_group "vm_group_bastion" { 
-  network_id = yandex_vpc_network.vpc.id
-  ingress {
-    description    = "Allow ssh protocol from local subnets"
     protocol       = "TCP"
-    port           = "22"
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    description    = "Allow ssh protocol to internet"
+    from_port      = 22
+    to_port        = 22
+    predefined_target = "self_security_group"
   }
-  
-  egress {
-    description    = "Permit ANY"
-    protocol       = "ANY"
-    v4_cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+}   
+    
+    
 
 #target group
 resource "yandex_alb_target_group" "tgs" {
@@ -159,13 +163,13 @@ resource "yandex_alb_virtual_host" "my-vh" {
 #Балансер
 resource "yandex_alb_load_balancer" "test-balancer" {
   name = "test-balancer"
-  network_id = yandex_vpc_network.vpc.id
-  security_group_ids = [yandex_vpc_security_group.vm_group_service.id]
+  network_id = yandex_vpc_network.internal-bastion-network.id
+  security_group_ids = [yandex_vpc_security_group.internal-bastion-sg.id]
 
   allocation_policy {
     location {
-      zone_id = "ru-central1-a"
-      subnet_id = yandex_vpc_subnet.public-subnet.id
+      zone_id = "ru-central1-b"
+      subnet_id = yandex_vpc_subnet.bastion-internal-segment-c.id
     }
   }
 
