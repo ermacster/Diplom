@@ -1,3 +1,4 @@
+
 #виртуальная сеть
 resource "yandex_vpc_network" "external-bastion-network" { 
   name = "external-bastion-network"
@@ -189,3 +190,9 @@ resource "yandex_alb_load_balancer" "test-balancer" {
     }
   }
 }
+
+
+
+
+
+

@@ -5,8 +5,9 @@ resource "yandex_compute_instance" "vm-web1" {
   zone        = "ru-central1-a"
   platform_id = "standard-v2"
   metadata = {
-  user_data = file("metadata.yml")
+  user-data = "${file("cloud-init.yaml")}"
  }
+ 
 
   resources {
     cores         = 2
@@ -66,7 +67,7 @@ resource "yandex_compute_instance" "vm-elastics" {
   zone        = "ru-central1-b"
   platform_id = "standard-v2"
   metadata = {
-  user_data = file("metadata.yml")
+  user-data = "${file("cloud-init.yaml")}"
  }
   resources {
     cores         = 2
@@ -98,7 +99,7 @@ resource "yandex_compute_instance" "vm-zabbix" {
   zone        = "ru-central1-b"
   platform_id = "standard-v2"
   metadata = {
-  user_data = file("metadata.yml")
+  user-data = "${file("cloud-init.yaml")}"
  }
   resources {
     cores         = 2
@@ -123,6 +124,7 @@ resource "yandex_compute_instance" "vm-zabbix" {
     preemptible = true
   }
 }
+
 
 #Kibana
 resource "yandex_compute_instance" "vm-kibana" {
@@ -163,8 +165,8 @@ resource "yandex_compute_instance" "bastion-host" {
   zone        = "ru-central1-a"
   platform_id = "standard-v2"
   metadata = {
-  user_data = file("metadata.yml")
-  }
+  user-data = "${file("cloud-init.yaml")}"
+ }
 
   resources {
     cores         = 2
