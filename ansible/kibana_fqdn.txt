@@ -1,0 +1,1 @@
+vm-kibana.ru-central1.internal
