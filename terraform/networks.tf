@@ -100,7 +100,17 @@ resource "yandex_vpc_security_group" "internal-bastion-sg" {
       description       = "Allow protocols inside "
       from_port         = egress.value
       to_port           = egress.value
-      predefined_target = "self_security_group"
+      v4_cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+  dynamic "ingress" {
+    for_each = ["80", "443", "53"]
+    content {
+      protocol          = "TCP"
+      description       = "Allow protocols inside "
+      from_port         = ingress.value
+      to_port           = ingress.value
+      v4_cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
