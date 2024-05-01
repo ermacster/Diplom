@@ -18,7 +18,7 @@ resource "yandex_compute_instance" "vm-web-a" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8l45jhe4nvt0ih7h2e"
+      image_id = "fd82vchjp2kdjiuam29k"
       size     = 10
     }
   }
@@ -51,14 +51,14 @@ resource "yandex_compute_instance" "vm-web-b" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8l45jhe4nvt0ih7h2e"
+      image_id = "fd82vchjp2kdjiuam29k"
       size     = 10
     }
 
   }
   network_interface {
     subnet_id          = yandex_vpc_subnet.bastion-internal-segment-b.id
-    security_group_ids = [yandex_vpc_security_group.internal-bastion-sg.id]
+    #security_group_ids = [yandex_vpc_security_group.internal-bastion-sg.id]
     nat                = false
   }
 
@@ -83,7 +83,7 @@ resource "yandex_compute_instance" "vm-elastics" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8l45jhe4nvt0ih7h2e"
+      image_id = "fd82vchjp2kdjiuam29k"
       size     = 10
     }
 
@@ -116,7 +116,7 @@ resource "yandex_compute_instance" "vm-zabbix" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8l45jhe4nvt0ih7h2e"
+      image_id = "fd82vchjp2kdjiuam29k"
       size     = 10
     }
 
@@ -150,7 +150,7 @@ resource "yandex_compute_instance" "vm-kibana" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8l45jhe4nvt0ih7h2e"
+      image_id = "fd82vchjp2kdjiuam29k"
       size     = 10
     }
 
@@ -188,7 +188,7 @@ resource "yandex_compute_instance" "bastion-host" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd8mfcsu31d3139ufj78"
+      image_id = "fd8enutfdqqdnpc8t8mm"
       size     = 10
     }
   }

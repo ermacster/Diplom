@@ -7,7 +7,7 @@ users:
  - name: ermac
    groups: sudo
    shell: /bin/bash
-   sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+   sudo: 'ALL=(ALL) NOPASSWD:ALL'
    ssh-authorized-keys:
      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDNP5/gTNSmOG4v06DCdB3UU9CnXqgs97t6dQYzehIX7bwK0mBgN+uV/Kj+Sde0rCiwqcTZ8TVPkLmMXnYCf0H6ilBaOUBUplCLX9hQfACywpS37CtrX/MrlZhpejkPR2EAFI8t1/JbKs99KI/wYlcn6g1SXAuDOyiVwVAGw3PcwdCPvqe/blExZ3arFoWw1bwERoow3ynJKRA5DnISUBb2p1mEH+MMUkE1XR2btfCRe09NmQJseuTJjKKy9pOJntffuxWjcQ0El1vDvn2ZK7s4jlFLIxRmh5f4prguw+72iIhArMz7K1CNd4ZiuMaVrzMCqHLkELoebDnsySTfIqd6oLyYao1ck41lB0aJhxjiiPKJlgdmnJxrGYdQmrF0GKUN8qy3Hx3CeU4C63pA8qkDjAR7sN2vihd5b5Ox5momGbKv1xinMVV9dLtk/LsnNd+gHGiz3biSVckdfPl1mw36mZxCJejtKW/eGr0eyWZNk8/OQSxKFBrwC6le2tySqfU= ermac@DESKTOP-62E2IUC
 runcmd: []
