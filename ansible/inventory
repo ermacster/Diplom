@@ -1,8 +1,26 @@
-[nxos]
-ansible_host=vm-web-a.ru-central1.internal
-ansible_host=vm-web-a.ru-central1.internal
-
-bastion01 ansible_host=178.154.204.89
-
-[all:vars]
-ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q ermac@bastion01"'
+all:
+  children:
+    web:
+  #vars:
+    #ansible_ssh_common_args: '-o ProxyJump=%(bastion01); StrictHostKeyChecking=no'
+    
+        
+web:
+  hosts:
+    vm-web-a:
+      ansible_host: vm-web-a.ru-central1.internal
+    vm-web-b:
+      ansible_host: vm-web-b.ru-central1.internal
+  vars:
+    ansible_ssh_common_args: '-o ProxyJump=%(bastion)'
+    ansible_ssh_private_key_file: /home/ermac/.ssh/id_rsa
+    
+bastion:
+  hosts:
+    bastion01:
+      ansible_host: "{{ lookup('file', '/home/ermac/Diplom/Diplom/ansible/bastion_external_ip.txt') }}"
+      ansible_user: ermac
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'  
+     
+       
