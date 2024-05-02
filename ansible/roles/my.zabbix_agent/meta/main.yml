@@ -1,0 +1,26 @@
+galaxy_info:
+  role_name: zabbix_agent
+  namespace: dandyrow
+  author: Daniel Lowry
+  description: Install and configure the Zabbix agent on Linux
+  license: GPL-3.0-only
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - focal
+    - name: Debian
+      versions:
+        - bullseye
+        - buster
+    - name: ArchLinux
+
+  galaxy_tags: 
+    - linux
+    - monitoring
+    - server
+    - zabbix
+
+dependencies: []

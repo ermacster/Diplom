@@ -1,0 +1,10 @@
+---
+- name: Run full system upgrade
+  community.general.pacman:
+    upgrade: true
+    update_cache: true
+    
+- name: Install Zabbix agent
+  community.general.pacman:
+    name: zabbix-agent
+    state: latest

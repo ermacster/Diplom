@@ -1,0 +1,56 @@
+---
+# tasks file for zabbix-agent
+- name: Include distro specific vars
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- ansible.builtin.include_tasks: "{{ ansible_os_family }}.yml"
+
+- name: Copy PSK file
+  ansible.builtin.template:
+   src: "{{ role_path }}/templates/psk.j2"
+   dest: "{{ zbx_dir }}/zabbix_agent.psk"
+   owner: "{{ zbx_usr }}"
+   group: "{{ zbx_usr }}"
+   mode: 0400
+  notify: 
+    - Restart zabbix-agent
+
+- name: Remove hostname definition in conf file
+  ansible.builtin.lineinfile:
+    path: "{{ zbx_dir }}/zabbix_agentd.conf"
+    regexp: ^(Hostname=)(.*)$
+    backrefs: true
+    state: absent
+
+- name: Create Zabbix include directory
+  ansible.builtin.file:
+    path: "{{ zbx_dir }}/zabbix_agentd.d/"
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: Include config parameters
+  ansible.builtin.lineinfile:
+   path: "{{ zbx_dir }}/zabbix_agentd.conf"
+   regexp: ^(Include=)$
+   insertafter: "# Include="
+   line: Include={{ zbx_dir }}/zabbix_agentd.d/*.conf
+   backrefs: true
+   state: present
+
+- name: Configure Zabbix agent
+  ansible.builtin.template:
+    owner: root
+    group: root
+    mode: 0644
+    src: '{{ role_path }}/templates/zabbix_agent.j2'
+    dest: "{{ zbx_dir }}/zabbix_agentd.d/agent.conf"
+  notify: 
+    - Restart zabbix-agent
+
+- name: Start and enable Zabbix agent service
+  ansible.builtin.service:
+    name: zabbix-agent
+    state: started
+    enabled: true

@@ -1,0 +1,11 @@
+---
+# defaults file for zabbix-agent
+zbx_dir: /etc/zabbix
+zbx_version: "6.2"
+
+zbx_agent_server: "127.0.0.1"
+zbx_agent_server_active: "127.0.0.1"
+zbx_agent_hostmetadata: ""
+zbx_agent_hostinterface: ""
+zbx_agent_pskid: "example"
+zbx_agent_psk: "7c1d185a11403fcb315ef3509d064131c515ec7b6113b3e1a8484b60b6d5dca0"

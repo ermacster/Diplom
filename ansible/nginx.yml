@@ -1,15 +1,6 @@
 ---
-- name: Install_nginx
-  hosts: 'web'
+- name: Including roles statically
+  hosts: web
   become: true
-  become_method: sudo
-  tasks:
-       - name: "install"
-         apt:
-             name: nginx
-             state: present
-       - name: "Запуск сервиса"
-         service:
-              name: nginx
-              state: started
-              enabled: true
+  roles:
+  - my.zabbix_agent
