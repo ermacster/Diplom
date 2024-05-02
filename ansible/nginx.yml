@@ -1,0 +1,15 @@
+---
+- name: Install_nginx
+  hosts: 'web'
+  become: true
+  become_method: sudo
+  tasks:
+       - name: "install"
+         apt:
+             name: nginx
+             state: present
+       - name: "Запуск сервиса"
+         service:
+              name: nginx
+              state: started
+              enabled: true
