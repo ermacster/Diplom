@@ -3,4 +3,4 @@
   hosts: web
   become: true
   roles:
-  - my.zabbix_agent
+  - geerlingguy.filebeat

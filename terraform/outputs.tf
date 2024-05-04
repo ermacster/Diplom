@@ -4,7 +4,7 @@ output "bastion_external_ip" {
 }
 resource "null_resource" "save_external_ip_to_file" {
   provisioner "local-exec" {
-    command = "echo '${yandex_compute_instance.bastion-host.network_interface[0].nat_ip_address}' > /home/ermac/Diplom/Diplom/ansible/bastion_external_ip.txt"
+    command = "echo '${yandex_compute_instance.bastion-host.network_interface[0].nat_ip_address}' > /home/ermac/Diplom/Diplom/ansible/servers_data/bastion_external_ip.txt"
   }
 }
 
@@ -18,8 +18,8 @@ output "zabbix_fqdn" {
 resource "null_resource" "save_external_ip_to_file_and_fqdn" {
   provisioner "local-exec" {
     command = <<EOT
-      echo '${yandex_compute_instance.vm-zabbix.network_interface[0].nat_ip_address}' > /home/ermac/Diplom/Diplom/ansible/zabbix_external_ip.txt;
-      echo '${yandex_compute_instance.vm-zabbix.fqdn}' > /home/ermac/Diplom/Diplom/ansible/zabbix_fqdn.txt;
+      echo '${yandex_compute_instance.vm-zabbix.network_interface[0].nat_ip_address}' > /home/ermac/Diplom/Diplom/ansible/servers_data/zabbix_external_ip.txt;
+      echo '${yandex_compute_instance.vm-zabbix.fqdn}' > /home/ermac/Diplom/Diplom/ansible/servers_data/zabbix_fqdn.txt;
     EOT   
   }
 }
@@ -30,7 +30,7 @@ output "web-a_fqdn" {
 }
 resource "null_resource" "save_fqdn_to_file_web-a" {
   provisioner "local-exec" {
-    command = "echo '${yandex_compute_instance.vm-web-a.fqdn}' > /home/ermac/Diplom/Diplom/ansible/web-a_fqdn.txt"
+    command = "echo '${yandex_compute_instance.vm-web-a.fqdn}' > /home/ermac/Diplom/Diplom/ansible/servers_data/web-a_fqdn.txt"
   }
 }
 
@@ -40,7 +40,7 @@ output "web-b_fqdn" {
 }
 resource "null_resource" "save_fqdn_to_file_web-b" {
   provisioner "local-exec" {
-    command = "echo '${yandex_compute_instance.vm-web-b.fqdn}' > /home/ermac/Diplom/Diplom/ansible/web-b_fqdn.txt"
+    command = "echo '${yandex_compute_instance.vm-web-b.fqdn}' > /home/ermac/Diplom/Diplom/ansible/servers_data/web-b_fqdn.txt"
   }
 }
 
@@ -50,7 +50,7 @@ output "elastics_fqdn" {
 }
 resource "null_resource" "save_fqdn_to_file_elastics" {
   provisioner "local-exec" {
-    command = "echo '${yandex_compute_instance.vm-elastics.fqdn}' > /home/ermac/Diplom/Diplom/ansible/elastics_fqdn.txt"
+    command = "echo '${yandex_compute_instance.vm-elastics.fqdn}' > /home/ermac/Diplom/Diplom/ansible/servers_data/elastics_fqdn.txt"
   }
 }
 
@@ -64,8 +64,12 @@ output "kibana_fqdn" {
 resource "null_resource" "save_external_ip_to_file_kibana" {
   provisioner "local-exec" {
     command = <<EOT
-      echo '${yandex_compute_instance.vm-kibana.network_interface[0].nat_ip_address}' > /home/ermac/Diplom/Diplom/ansible/kibana_external_ip.txt;
-      echo '${yandex_compute_instance.vm-kibana.fqdn}' > /home/ermac/Diplom/Diplom/ansible/kibana_fqdn.txt;
+      echo '${yandex_compute_instance.vm-kibana.network_interface[0].nat_ip_address}' > /home/ermac/Diplom/Diplom/ansible/servers_data/kibana_external_ip.txt;
+      echo '${yandex_compute_instance.vm-kibana.fqdn}' > /home/ermac/Diplom/Diplom/ansible/servers_data/kibana_fqdn.txt;
     EOT
   }
 }
+#Вывод для сайт
+#output "web-site_ip" {
+ # value = yandex_alb_load_balancer.test-balancer.external_ipv4_address
+#}

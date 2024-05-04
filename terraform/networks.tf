@@ -13,7 +13,7 @@ resource "yandex_dns_zone" "zone1" {
     label1 = "label-1-value"
   }
 
-  zone             = "example.com."
+  zone             = "ermac.com."
   public           = false
   private_networks = [yandex_vpc_network.internal-bastion-network.id]
 
@@ -115,14 +115,14 @@ resource "yandex_vpc_security_group" "internal-bastion-sg" {
   }
 
   egress {
-    description       = "Allow ssh protocol from internet"
+    description       = "Allow ping"
     protocol          = "ICMP"
     from_port         = -1
     to_port           = -1
     predefined_target = "self_security_group"
   }
   ingress {
-    description       = "Allow ssh protocol from internet"
+    description       = "Allow allow ping"
     protocol          = "ICMP"
     from_port         = -1
     to_port           = -1
@@ -169,61 +169,59 @@ resource "yandex_alb_backend_group" "backend_group" {
 }
 
 #httprouter
-#resource "yandex_alb_http_router" "htr2" {
-# folder_id = local.folder_id
-#name      = "htr2"
-#labels = {
-#  tf-label    = "tf-label-value"
-#  empty-label = ""
-#}
-#}
+resource "yandex_alb_http_router" "htr2" {
+ folder_id = local.folder_id
+name      = "htr2"
+labels = {
+  tf-label    = "tf-label-value"
+  empty-label = ""
+}
+}
 
-#resource "yandex_alb_virtual_host" "my-vh" {
-# name           = "my-vh"
-#http_router_id = yandex_alb_http_router.htr2.id
-#route {
-#  name = "route-to-hell"
-# http_route {
-#   http_route_action {
-#    backend_group_id = yandex_alb_backend_group.backend_group.id
-#   timeout          = "60s"
-#}
-# }
-#}
-#route_options {
-#security_profile_id = "fevcrrg5fci3bf6n6460"
-#}
-#}
+resource "yandex_alb_virtual_host" "my-vh" {
+ name           = "my-vh"
+http_router_id = yandex_alb_http_router.htr2.id
+route {
+  name = "route-to-hell"
+ http_route {
+   http_route_action {
+    backend_group_id = yandex_alb_backend_group.backend_group.id
+   timeout          = "60s"
+}
+ }
+}
+}
+
 
 #Балансер
-#resource "yandex_alb_load_balancer" "test-balancer" {
-#  name               = "test-balancer"
-#  network_id         = yandex_vpc_network.internal-bastion-network.id
-#  security_group_ids = [yandex_vpc_security_group.internal-bastion-sg.id]
+resource "yandex_alb_load_balancer" "test-balancer" {
+  name               = "test-balancer"
+  network_id         = yandex_vpc_network.internal-bastion-network.id
+  security_group_ids = [yandex_vpc_security_group.internal-bastion-sg.id]
 
-# allocation_policy {
-#   location {
-#     zone_id   = "ru-central1-b"
-#    subnet_id = yandex_vpc_subnet.bastion-internal-segment-c.id
-# }
-#}
+ allocation_policy {
+   location {
+     zone_id   = "ru-central1-d"
+    subnet_id = yandex_vpc_subnet.bastion-internal-segment-c.id
+ }
+}
 
-#listener {
-#  name = "listener-test"
-#  endpoint {
-#    address {
-#     external_ipv4_address {
-#     }
-#   }
-#  ports = [9000]
-#}
-#http {
-#  handler {
-#    http_router_id = yandex_alb_http_router.htr2.id
-#  }
-#}
-#}
-#}
+listener {
+  name = "listener-test"
+  endpoint {
+    address {
+     external_ipv4_address {
+     }
+   }
+  ports = [80]
+}
+http {
+  handler {
+    http_router_id = yandex_alb_http_router.htr2.id
+  }
+}
+}
+}
 
 
 
