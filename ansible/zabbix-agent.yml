@@ -1,6 +1,6 @@
 ---
 - name: Including roles statically
-  hosts: web
+  hosts: all
   become: true
   roles:
-  - geerlingguy.filebeat
+      - my.zabbix_agent

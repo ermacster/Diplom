@@ -3,8 +3,8 @@
 zbx_dir: /etc/zabbix
 zbx_version: "6.2"
 
-zbx_agent_server: "127.0.0.1"
-zbx_agent_server_active: "127.0.0.1"
+zbx_agent_server: "vm-zabbix.ru-central1.internal"
+zbx_agent_server_active: "vm-zabbix.ru-central1.internal"
 zbx_agent_hostmetadata: ""
 zbx_agent_hostinterface: ""
 zbx_agent_pskid: "example"

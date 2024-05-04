@@ -94,7 +94,7 @@ resource "yandex_vpc_security_group" "internal-bastion-sg" {
   }
 
   dynamic "egress" {
-    for_each = ["80", "443", "22", "53"]
+    for_each = ["80", "443", "22", "53", "5601", "10051", "10050", "9200"]
     content {
       protocol          = "TCP"
       description       = "Allow protocols inside "
@@ -104,7 +104,7 @@ resource "yandex_vpc_security_group" "internal-bastion-sg" {
     }
   }
   dynamic "ingress" {
-    for_each = ["80", "443", "53"]
+    for_each = ["80", "443", "53", "5601", "10051", "10050", "9200"]
     content {
       protocol          = "TCP"
       description       = "Allow protocols inside "

@@ -1,0 +1,23 @@
+- name: Установка и настройка nginx
+  hosts: web
+  become: true
+  tasks:
+    - name: Установка nginx
+      apt:
+        name: nginx
+        state: present
+
+    
+    - name: копирование сайта
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: '/home/ermac/Diplom/Diplom/ansible/servers_data/index.html', dest: '/var/www/html/index.html' }
+        - { src: '/home/ermac/Diplom/Diplom/ansible/servers_data/1234.jpg', dest: '/var/www/html/1234.jpg' }        
+        
+      
+    - name: перезапуск службы 
+      service:
+        name: nginx
+        state: restarted

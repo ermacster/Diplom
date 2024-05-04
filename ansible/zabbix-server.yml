@@ -1,0 +1,35 @@
+---
+- hosts: zabbix
+  become: true
+  tasks:
+    - name: Копировать скрипт установки Docker на сервер
+      copy:
+       src: /home/ermac/Diplom/Diplom/ansible/servers_data/get-docker.sh
+       dest: /tmp/get-docker.sh
+       mode: '0755'
+
+    - name: Install docker by script
+      command:
+       cmd: /tmp/get-docker.sh
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Create directory for Zabbix
+      file:
+        path: /opt/zabbix-docker
+        state: directory
+        mode: '0755'
+
+    - name: Deploy docker-compose.yaml
+      copy:
+        src: /home/ermac/Diplom/Diplom/ansible/servers_data/docker-compose.yml
+        dest: /opt/zabbix-docker/docker-compose.yml
+        
+
+    - name: Run docker-compose
+      docker_compose:
+        project_src: /opt/zabbix-docker
+        state: present

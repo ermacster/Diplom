@@ -42,5 +42,5 @@ zabbix:
 
 elastics:         
   hosts:
-    vm-zabbix:
+    vm-elastics:
       ansible_host: vm-elastics.ru-central1.internal           

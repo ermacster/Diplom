@@ -1,0 +1,27 @@
+---
+- name: Установка и настройка Filebeat, Elasticsearch
+  hosts: elastics
+  become: true
+  tasks:
+    - name: Add Elastic 7.x repository
+      apt_repository:
+       repo: 'deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main'
+       state: present
+       filename: 'elastic-7.x'
+
+    - name: обновление кэш репозитория
+      apt:
+        update_cache: yes  
+
+    - name: Установка Elasticsearch
+      apt:
+        name: elasticsearch
+        state: present
+    
+
+    - name: Запуск и включение службы Elasticsearch
+      service:
+        name: elasticsearch
+        state: started
+        enabled: yes
+ 

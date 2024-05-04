@@ -1,0 +1,31 @@
+---
+- name: Установка и настройка Filebeat
+  hosts: web
+  become: true
+  tasks:
+    - name: Add Elastic 7.x repository
+      apt_repository:
+       repo: 'deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main'
+       state: present
+       filename: 'elastic-7.x'
+
+    - name: обновление кэш репозитория
+      apt:
+        update_cache: yes  
+
+    - name: Установка Filebeat
+      apt:
+        name: filebeat
+        state: present
+
+    - name: Копирование конфигурационного файла filebeat
+      copy:
+        src: /home/ermac/Diplom/Diplom/ansible/servers_data/filebeat.yml
+        dest: /etc/filebeat/filebeat.yml
+
+    - name: Запуск и включение службы filebeat
+      service:
+        name: filebeat
+        state: started
+        enabled: yes
+ 

@@ -1,0 +1,30 @@
+- name: Установка Кибана
+  hosts: kibana
+  become: true
+  tasks:
+   - name: Add Elastic 7.x repository
+     apt_repository:
+       repo: 'deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main'
+       state: present
+       filename: 'elastic-7.x'
+
+   - name: обновление кэш репозитория
+     apt:
+        update_cache: yes  
+
+   - name: Установка Kibana
+     apt:
+        name: kibana
+        state: present
+
+   - name: Копирование конфигурационного файла Kibana
+     copy:
+        src: /home/ermac/Diplom/Diplom/ansible/servers_data/kibana.yml
+        dest: /etc/kibana/kibana.yml     
+
+   - name: Запуск и включение службы Kibana
+     service:
+        name: kibana
+        state: started
+        enabled: yes
+  
