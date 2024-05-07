@@ -127,7 +127,21 @@ resource "yandex_vpc_security_group" "internal-bastion-sg" {
     from_port         = -1
     to_port           = -1
     predefined_target = "self_security_group"
-  }  
+  }
+  egress {
+    description       = "Allow zabbix"
+    protocol          = "tcp"
+    from_port         = 10050
+    to_port           = 10050
+    predefined_target = "self_security_group"
+  }
+  ingress {
+    description       = "Allow zabbix"
+    protocol          = "tcp"
+    from_port         = 10050
+    to_port           = 10050
+    predefined_target = "self_security_group"
+  }    
 }
 
 #target group

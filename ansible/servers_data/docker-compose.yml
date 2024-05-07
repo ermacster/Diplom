@@ -15,10 +15,13 @@ services:
       POSTGRES_DB: "zabbix"
       POSTGRES_USER: "zabbix"
       POSTGRES_PASSWORD: "zabbix_password"
+                
+    ports:
+      - "5432:5432"    
     volumes:
       - zabbix-postgres:/var/lib/postgresql/data
   zabbix-web:
-    image: zabbix/zabbix-web-nginx-pgsql:latest
+    image: zabbix/zabbix-web-apache-pgsql:latest
     environment:
       DB_SERVER_HOST: "postgres-server"
       POSTGRES_DB: "zabbix"
@@ -27,5 +30,6 @@ services:
       ZBX_SERVER_HOST: "zabbix-server"
     ports:
       - "80:8080"
+ 
 volumes:
   zabbix-postgres:
