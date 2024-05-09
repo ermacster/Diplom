@@ -5,15 +5,15 @@
 
 - ansible.builtin.include_tasks: "{{ ansible_os_family }}.yml"
 
-#- name: Copy PSK file
- # ansible.builtin.template:
-  # src: "{{ role_path }}/templates/psk.j2"
-   #dest: "{{ zbx_dir }}/zabbix_agent.psk"
-   #owner: "{{ zbx_usr }}"
-   #group: "{{ zbx_usr }}"
-   #mode: 0400
-  #notify: 
-   # - Restart zabbix-agent
+- name: Copy PSK file
+  ansible.builtin.template:
+   src: "{{ role_path }}/templates/psk.j2"
+   dest: "{{ zbx_dir }}/zabbix_agent.psk"
+   owner: "{{ zbx_usr }}"
+   group: "{{ zbx_usr }}"
+   mode: 0400
+  notify: 
+    - Restart zabbix-agent
 
 - name: Remove hostname definition in conf file
   ansible.builtin.lineinfile:
