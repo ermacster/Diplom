@@ -1,5 +1,5 @@
 authorized_key.json
 metadata.yml
 networks.back
-/home/ermac/Diplom/Diplom/ansible/roles/my.zabbix_agent/defaults/main.yml
-/home/ermac/Diplom/Diplom/ansible/servers_data/zabbix_server.psk
+main.yml
+zabbix_server.psk
