@@ -1,0 +1,28 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/nginx/access.log
+  fields:
+    log_type: nginx
+  fields_under_root: true
+  ignore_older: 24h
+  scan_frequency: 10s
+  harvester_buffer_size: 16384
+ 
+- type: log
+  enabled: true
+  paths:
+    - /var/log/nginx/error.log
+  fields:
+    log_type: error
+    fields_under_root: true
+  ignore_older: 24h
+  scan_frequency: 10s
+  harvester_buffer_size: 16384
+  
+output.elasticsearch:
+  hosts: ["vm-elastics.ru-central1.internal:9200"]
+
+setup.kibana:
+  host: ["vm-kibana.ru-central1.internal:5601"]

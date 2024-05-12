@@ -1,0 +1,18 @@
+- name: Включение плейбука 1
+  import_playbook: nginx.yml
+
+- name: Включение плейбука 2
+  import_playbook: filebeat.yml
+
+- name: Включение плейбука 3
+  import_playbook: kibana.yml
+
+- name: Включение плейбука 4
+  import_playbook: zabbix-server.yml
+
+- name: Включение плейбука 4
+  import_playbook: zabbix-agent.yml
+
+- name: Включение плейбука 4
+  import_playbook: elastics.yml
+  

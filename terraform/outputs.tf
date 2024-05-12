@@ -50,7 +50,10 @@ output "elastics_fqdn" {
 }
 resource "null_resource" "save_fqdn_to_file_elastics" {
   provisioner "local-exec" {
-    command = "echo '${yandex_compute_instance.vm-elastics.fqdn}' > /home/ermac/Diplom/Diplom/ansible/servers_data/elastics_fqdn.txt"
+    command = <<EOT
+    echo '${yandex_compute_instance.vm-elastics.fqdn}' > /home/ermac/Diplom/Diplom/ansible/servers_data/elastics_fqdn.txt;
+    echo '${yandex_compute_instance.vm-elastics.network_interface[0].ip_address}' > /home/ermac/Diplom/Diplom/ansible/servers_data/elastics_ip.txt;
+    EOT
   }
 }
 
@@ -69,7 +72,13 @@ resource "null_resource" "save_external_ip_to_file_kibana" {
     EOT
   }
 }
-#Вывод для сайт
-#output "web-site_ip" {
- # value = yandex_alb_load_balancer.test-balancer.external_ipv4_address
-#}
+#Вывод для сайта
+output "web-site_ip" {
+  value = yandex_alb_load_balancer.test-balancer.listener[0].endpoint[0].address[0].external_ipv4_address[0].address
+}
+
+resource "null_resource" "save_ip_to_file_elastic" {
+  provisioner "local-exec" {
+    command = "echo '${yandex_alb_load_balancer.test-balancer.listener[0].endpoint[0].address[0].external_ipv4_address[0].address}' > /home/ermac/Diplom/Diplom/ansible/servers_data/site_ip.txt"
+  }
+}

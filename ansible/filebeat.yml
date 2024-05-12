@@ -2,12 +2,14 @@
 - name: Установка и настройка Filebeat
   hosts: web
   become: true
+  vars_files:
+    - /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
   tasks:
     - name: Add Elastic 7.x repository
       apt_repository:
-       repo: 'deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main'
-       state: present
-       filename: 'elastic-7.x'
+        repo: 'deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main'
+        state: present
+        filename: 'elastic-7.x'
 
     - name: обновление кэш репозитория
       apt:
@@ -28,4 +30,15 @@
         name: filebeat
         state: started
         enabled: yes
- 
+
+    - name: Включение модуля Nginx для Filebeat
+      command: filebeat modules enable nginx
+
+    - name: Загрузка шаблона индекса для Filebeat
+      command: filebeat setup --index-management
+
+    
+    - name: Перезапуск службы filebeat
+      service:
+        name: filebeat
+        state: restarted

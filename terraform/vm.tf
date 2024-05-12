@@ -58,7 +58,7 @@ resource "yandex_compute_instance" "vm-web-b" {
   }
   network_interface {
     subnet_id          = yandex_vpc_subnet.bastion-internal-segment-b.id
-    #security_group_ids = [yandex_vpc_security_group.internal-bastion-sg.id]
+    security_group_ids = [yandex_vpc_security_group.internal-bastion-sg.id]
     nat                = false
   }
 
@@ -66,7 +66,7 @@ resource "yandex_compute_instance" "vm-web-b" {
     preemptible = true
   }
 }
-#Elastics+filebeat
+#Elastics
 resource "yandex_compute_instance" "vm-elastics" {
   name        = "vm-elastics"
   hostname    = "vm-elastics"
@@ -76,8 +76,8 @@ resource "yandex_compute_instance" "vm-elastics" {
     user-data = "${file("cloud-init.yaml")}"
   }
   resources {
-    cores         = 2
-    memory        = 1
+    cores         = 4
+    memory        = 8
     core_fraction = 20
   }
 
@@ -143,8 +143,8 @@ resource "yandex_compute_instance" "vm-kibana" {
     user-data = "${file("cloud-init.yaml")}"
   }
   resources {
-    cores         = 2
-    memory        = 1
+    cores         = 4
+    memory        = 8
     core_fraction = 20
   }
 
@@ -193,11 +193,7 @@ resource "yandex_compute_instance" "bastion-host" {
     }
   }
 
-  #network_interface {
-  #subnet_id = yandex_vpc_subnet.bastion-external-segment.id
-  #security_group_ids = [yandex_vpc_security_group.secure-bastion-sg.id]
-  #nat = true # The subnet ID of the existing subnet
-  #}
+ 
 
   network_interface {
     subnet_id          = yandex_vpc_subnet.bastion-internal-segment-a.id

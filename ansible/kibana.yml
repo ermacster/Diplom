@@ -1,6 +1,8 @@
 - name: Установка Кибана
   hosts: kibana
   become: true
+  vars_files:
+    - /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
   tasks:
    - name: Add Elastic 7.x repository
      apt_repository:
@@ -20,7 +22,7 @@
    - name: Копирование конфигурационного файла Kibana
      copy:
         src: /home/ermac/Diplom/Diplom/ansible/servers_data/kibana.yml
-        dest: /etc/kibana/kibana.yml     
+        dest: /etc/kibana/kibana.yml 
 
    - name: Запуск и включение службы Kibana
      service:

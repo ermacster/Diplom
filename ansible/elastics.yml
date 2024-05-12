@@ -1,5 +1,5 @@
 ---
-- name: Установка и настройка Filebeat, Elasticsearch
+- name: Установка и настройка  Elasticsearch
   hosts: elastics
   become: true
   tasks:
@@ -9,7 +9,7 @@
        state: present
        filename: 'elastic-7.x'
 
-    - name: обновление кэш репозитория
+    - name: обновление кэша репозитория
       apt:
         update_cache: yes  
 
@@ -17,6 +17,22 @@
       apt:
         name: elasticsearch
         state: present
+
+    - name: Копирование конфигурационного файла elasticsearch
+      copy:
+        src: /home/ermac/Diplom/Diplom/ansible/servers_data/elasticsearch.yml
+        dest: /etc/elasticsearch/elasticsearch.yml   
+
+    - name: Установка network.host из файла
+      set_fact:
+        network_host: "{{ lookup('file', '/home/ermac/Diplom/Diplom/ansible/servers_data/elastics_ip.txt') }}"
+
+    - name: Обновление elasticsearch.yml с новым network.host
+      lineinfile:
+        path: /etc/elasticsearch/elasticsearch.yml
+        regexp: '^network.host:'
+        line: "network.host: {{ network_host }}"
+        state: present    
     
 
     - name: Запуск и включение службы Elasticsearch
@@ -24,4 +40,21 @@
         name: elasticsearch
         state: started
         enabled: yes
- 
+
+    - name: Задание паролей для встроенных пользователей Elasticsearch и сохранение в файл
+      shell: >
+       /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > /tmp/passwords.txt
+      args:
+       creates: /tmp/passwords.txt
+
+    - name: Создание файла учетных данных credentials.yml из вывода паролей
+      shell: |
+       echo "elastic_password: $(grep 'PASSWORD elastic =' /tmp/passwords.txt | awk '{print \$4}')" > /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
+       echo "kibana_password: $(grep 'PASSWORD kibana =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
+       echo "apm_system_password: $(grep 'PASSWORD apm_system =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
+       echo "kibana_system_password: $(grep 'PASSWORD kibana_system =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
+       echo "beats_system_password: $(grep 'PASSWORD beats_system =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
+           
+      args:
+        creates: /etc/ansible/credentials.yml
+      no_log: true
