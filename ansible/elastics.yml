@@ -41,20 +41,13 @@
         state: started
         enabled: yes
 
-    - name: Задание паролей для встроенных пользователей Elasticsearch и сохранение в файл
-      shell: >
-       /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > /tmp/passwords.txt
-      args:
-       creates: /tmp/passwords.txt
+    - name: Задание паролей для встроенных пользователей Elasticsearch
+      command: >
+        /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b
+      register: passwords_output
+      changed_when: "'PASSWORD elastic =' in passwords_output.stdout"
 
-    - name: Создание файла учетных данных credentials.yml из вывода паролей
-      shell: |
-       echo "elastic_password: $(grep 'PASSWORD elastic =' /tmp/passwords.txt | awk '{print \$4}')" > /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
-       echo "kibana_password: $(grep 'PASSWORD kibana =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
-       echo "apm_system_password: $(grep 'PASSWORD apm_system =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
-       echo "kibana_system_password: $(grep 'PASSWORD kibana_system =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
-       echo "beats_system_password: $(grep 'PASSWORD beats_system =' /tmp/passwords.txt | awk '{print \$4}')" >> /home/ermac/Diplom/Diplom/ansible/servers_data/credentials.yml
-           
-      args:
-        creates: /etc/ansible/credentials.yml
-      no_log: true
+    - name: Вывод паролей пользователей
+      debug:
+        msg: "{{ passwords_output.stdout_lines }}"
+  

@@ -11,8 +11,8 @@ filebeat.config.modules:
 
 output.elasticsearch:
   hosts: ["vm-elastics.ru-central1.internal:9200"]
-  username: 
-  password: 
+  username: "elastic"
+  password: "o6tWSO4KRTfQ92KcGMpE"
 
 setup.kibana:
   host: "vm-kibana.ru-central1.internal:5601"
